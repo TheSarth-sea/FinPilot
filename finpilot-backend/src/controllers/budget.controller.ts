@@ -191,7 +191,7 @@ export async function updateBudget(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);;
 
     const existing = await prisma.budget.findFirst({
       where: { id, userId },

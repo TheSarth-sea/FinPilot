@@ -94,7 +94,7 @@ export async function updateInvestment(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const existing = await prisma.investment.findFirst({
       where: { id, userId },
@@ -143,7 +143,7 @@ export async function deleteInvestment(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const existing = await prisma.investment.findFirst({
       where: { id, userId },

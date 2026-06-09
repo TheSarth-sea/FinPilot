@@ -52,7 +52,7 @@ export async function markAsRead(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+  const id = String(req.params.id);
 
     const notification = await prisma.notification.findFirst({
       where: { id, userId },
@@ -110,7 +110,7 @@ export async function deleteNotification(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const notification = await prisma.notification.findFirst({
       where: { id, userId },

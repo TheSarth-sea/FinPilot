@@ -119,7 +119,7 @@ export async function updateExpense(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     // Verify ownership
     const existing = await prisma.expense.findFirst({
@@ -165,8 +165,7 @@ export async function deleteExpense(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
-
+    const id = String(req.params.id);
     const existing = await prisma.expense.findFirst({
       where: { id, userId },
     });

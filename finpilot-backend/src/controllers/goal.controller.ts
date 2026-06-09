@@ -92,7 +92,7 @@ export async function updateGoal(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const existing = await prisma.goal.findFirst({
       where: { id, userId },
@@ -141,7 +141,7 @@ export async function deleteGoal(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const existing = await prisma.goal.findFirst({
       where: { id, userId },

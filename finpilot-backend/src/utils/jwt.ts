@@ -6,17 +6,24 @@ interface TokenPayload {
 }
 
 export function generateAccessToken(userId: string): string {
-  return jwt.sign({ userId } as TokenPayload, config.jwtSecret, {
-    expiresIn: config.jwtExpiry,
-  });
+  return jwt.sign(
+    { userId } as TokenPayload,
+    config.jwtSecret,
+    {
+      expiresIn: config.jwtExpiry as any,
+    }
+  );
 }
 
 export function generateRefreshToken(userId: string): string {
-  return jwt.sign({ userId } as TokenPayload, config.jwtSecret, {
-    expiresIn: config.refreshTokenExpiry,
-  });
+  return jwt.sign(
+    { userId } as TokenPayload,
+    config.jwtSecret,
+    {
+      expiresIn: config.refreshTokenExpiry as any,
+    }
+  );
 }
-
 export function verifyAccessToken(token: string): TokenPayload {
   return jwt.verify(token, config.jwtSecret) as TokenPayload;
 }
