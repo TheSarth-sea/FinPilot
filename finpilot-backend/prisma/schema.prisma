@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
+enum ExpenseCategory {
+  FOOD
+  TRAVEL
+  RENT
+  SHOPPING
+  BILLS
+  EDUCATION
+  HEALTH
+  OTHER
+}
+
+enum GoalType {
+  HOUSE
+  CAR
+  TRIP
+  MARRIAGE
+  EDUCATION
+  EMERGENCY
+  RETIREMENT
+  CUSTOM
+}
+
+enum InvestmentType {
+  STOCKS
+  MUTUAL_FUNDS
+  ETFS
+  GOLD
+  CRYPTO
+}
+
+enum NotificationType {
+  GOAL_MILESTONE
+  SIP_REMINDER
+  BILL_REMINDER
+  SAVINGS_TARGET
+  SYSTEM
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  name          String
+  passwordHash  String?
+  avatarUrl     String?
+  provider      AuthProvider @default(EMAIL)
+  emailVerified Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Password reset fields
+  resetToken       String?
+  resetTokenHash   String?
+  resetTokenExpiry DateTime?
+
+  // Email verification fields
+  verifyToken     String?
+  verifyTokenHash String?
+
+  sessions         Session[]
+  financialProfile FinancialProfile?
+  expenses         Expense[]
+  goals            Goal[]
+  investments      Investment[]
+  budgets          Budget[]
+  notifications    Notification[]
+  chatMessages     ChatMessage[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model FinancialProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  monthlyIncome    Decimal  @default(0) @db.Decimal(15, 2)
+  monthlyExpenses  Decimal  @default(0) @db.Decimal(15, 2)
+  totalSavings     Decimal  @default(0) @db.Decimal(15, 2)
+  totalInvestments Decimal  @default(0) @db.Decimal(15, 2)
+  totalDebts       Decimal  @default(0) @db.Decimal(15, 2)
+  emergencyFund    Decimal  @default(0) @db.Decimal(15, 2)
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("financial_profiles")
+}
+
+model Expense {
+  id          String          @id @default(uuid())
+  userId      String
+  amount      Decimal         @db.Decimal(15, 2)
+  category    ExpenseCategory
+  description String
+  date        DateTime
+  receiptUrl  String?
+  createdAt   DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([userId, category])
+  @@map("expenses")
+}
+
+model Goal {
+  id                  String   @id @default(uuid())
+  userId              String
+  name                String
+  type                GoalType
+  targetAmount        Decimal  @db.Decimal(15, 2)
+  currentAmount       Decimal  @default(0) @db.Decimal(15, 2)
+  deadline            DateTime
+  monthlyContribution Decimal  @default(0) @db.Decimal(15, 2)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("goals")
+}
+
+model Investment {
+  id             String         @id @default(uuid())
+  userId         String
+  type           InvestmentType
+  name           String
+  amountInvested Decimal        @db.Decimal(15, 2)
+  currentValue   Decimal        @db.Decimal(15, 2)
+  units          Decimal        @default(0) @db.Decimal(15, 4)
+  purchaseDate   DateTime
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("investments")
+}
+
+model Budget {
+  id           String   @id @default(uuid())
+  userId       String
+  month        DateTime
+  income       Decimal  @db.Decimal(15, 2)
+  needsLimit   Decimal  @db.Decimal(15, 2)
+  wantsLimit   Decimal  @db.Decimal(15, 2)
+  savingsLimit Decimal  @db.Decimal(15, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month])
+  @@map("budgets")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  role      ChatRole
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("chat_messages")
+}
