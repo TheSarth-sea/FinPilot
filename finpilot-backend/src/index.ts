@@ -18,6 +18,13 @@ dotenv.config();
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "FinPilot API is running successfully"
+  });
+});
+
 app.use(helmet());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',

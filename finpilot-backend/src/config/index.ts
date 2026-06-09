@@ -6,7 +6,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || "",
+  databaseUrl: process.env.DATABASE_URL || "postgresql://authenticator:npg_9hoSf8ndtMjG@ep-aged-mud-aoia5hco-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
 
   // JWT
   jwtSecret: process.env.JWT_SECRET || "default-dev-secret-change-me",
